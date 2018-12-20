@@ -19,7 +19,7 @@ class Registration extends Component {
   }
 
   isFormEmpty = ({ username, email,password, passwordConfirm}) => {
-    return !username.length || !email.length || password.length || passwordConfirm.length 
+    return !username.length || !email.length || !password.length || !passwordConfirm.length 
   }
 
   isPasswordValid = ({password, passwordConfirm}) => {
@@ -46,6 +46,9 @@ class Registration extends Component {
       })
       return false;
     } else {
+      this.setState({
+        errors: [],
+      })
       return true;
     }
   }
@@ -58,11 +61,22 @@ class Registration extends Component {
     .createUserWithEmailAndPassword(this.state.email, this.state.password)
     .then(createdUser => {
       console.log(createdUser);
+      this.setState({
+        loading: false,
+      })
     })
     .catch(err => {
       console.error(err);
+      this.setState({
+        errors: this.state.errors.concat(err),
+        loading: false,
+      })
     })
   }
+  }
+
+  handlerInput = (errors, inputName) => {
+    return errors.some( el => el.message.toLowerCase().includes(inputName)) ? 'error' : ''
   }
 
   render() {
@@ -76,10 +90,10 @@ class Registration extends Component {
           </Header>
           <Form onSubmit={this.handlerSubmit} size='large'>
            <Segment stacked>
-           <Form.Input fluid name='username' icon='user' iconPosition='left' placeholder='Username' onChange={this.handlerChange} type='text'/>
-           <Form.Input fluid name='email' icon='mail' iconPosition='left' placeholder='Email' onChange={this.handlerChange} type='email'/>
-           <Form.Input fluid name='password' icon='lock' iconPosition='left' onChange={this.handlerChange} placeholder='Password' type='password'/>
-           <Form.Input fluid name='passwordConfirm' icon='repeat' onChange={this.handlerChange} iconPosition='left' placeholder='Password Confirm' type='password'/>
+           <Form.Input fluid name='username' className={this.handlerInput(errors, 'username')} icon='user' iconPosition='left' placeholder='Username' onChange={this.handlerChange} type='text'/>
+           <Form.Input fluid name='email' className={this.handlerInput(errors, 'email')} icon='mail' iconPosition='left' placeholder='Email' onChange={this.handlerChange} type='email'/>
+           <Form.Input fluid name='password' className={this.handlerInput(errors, 'password')} icon='lock' iconPosition='left' onChange={this.handlerChange} placeholder='Password' type='password'/>
+           <Form.Input fluid name='passwordConfirm' className={this.handlerInput(errors, 'password')} icon='repeat' onChange={this.handlerChange} iconPosition='left' placeholder='Password Confirm' type='password'/>
            <Button color='orange' fluid size='large'>Submit</Button>
            </Segment>
           </Form>
