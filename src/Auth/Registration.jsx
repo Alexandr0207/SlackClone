@@ -9,6 +9,7 @@ class Registration extends Component {
     email: '',
     password: '',
     passwordConfirm: '',
+    errors: [],
   }
 
   handlerChange = (e) => {
@@ -17,8 +18,41 @@ class Registration extends Component {
     })
   }
 
+  isFormEmpty = ({ username, email,password, passwordConfirm}) => {
+    return !username.length || !email.length || password.length || passwordConfirm.length 
+  }
+
+  isPasswordValid = ({password, passwordConfirm}) => {
+   return password === passwordConfirm
+  }
+
+  isFormValid = () =>{
+    let errors = [];
+    let error;
+    if (this.isFormEmpty(this.state)){
+      error = {
+        message: 'fill in all fields'
+      };
+      this.setState({
+        errors: errors.concat(error)
+      })
+      return false;
+    } else if(!this.isPasswordValid(this.state)){
+      error = {
+        message: 'Password is invalid'
+      };
+      this.setState({
+        errors: errors.concat(error)
+      })
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   handlerSubmit = (e) => {
     e.preventDefault();
+    if(this.isFormValid()){
     firebase 
     .auth()
     .createUserWithEmailAndPassword(this.state.email, this.state.password)
@@ -29,8 +63,10 @@ class Registration extends Component {
       console.error(err);
     })
   }
+  }
 
   render() {
+    const {errors} = this.state;
     return (
       <Grid textAlign='center' verticalAlign='middle' className='app'>
         <Grid.Column style={{maxWidth: 450}}>
@@ -47,6 +83,12 @@ class Registration extends Component {
            <Button color='orange' fluid size='large'>Submit</Button>
            </Segment>
           </Form>
+          {errors.length > 0 && (
+            <Message error>
+              <h3>Error</h3>
+              {errors.map(el => <p key={el.message}>{el.message}</p>)}
+            </Message>
+          )}
           <Message>
             Already a user?
             <NavLink to='/login'>Login</NavLink>
