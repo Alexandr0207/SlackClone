@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {NavLink} from 'react-router-dom';
+import md5 from 'md5'
 import firebase from '../firebase';
 import { Grid, Form, Segment, Button, Header, Message, Icon } from 'semantic-ui-react';
 class Registration extends Component {
@@ -10,6 +11,8 @@ class Registration extends Component {
     password: '',
     passwordConfirm: '',
     errors: [],
+    loading: false,
+    usersRef: firebase.database().ref('users')
   }
 
   handlerChange = (e) => {
@@ -56,13 +59,19 @@ class Registration extends Component {
   handlerSubmit = (e) => {
     e.preventDefault();
     if(this.isFormValid()){
+      this.setState({ errors: [], loading: true})
     firebase 
     .auth()
     .createUserWithEmailAndPassword(this.state.email, this.state.password)
     .then(createdUser => {
       console.log(createdUser);
-      this.setState({
-        loading: false,
+      createdUser.user.updateProfile({
+        displayName: this.state.username,
+        // phoneNumber: this.state.password,
+        photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
+      })
+      .then(() => {
+        this.saveUser(createdUser).then(() => console.log('user saved'))
       })
     })
     .catch(err => {
@@ -77,6 +86,14 @@ class Registration extends Component {
 
   handlerInput = (errors, inputName) => {
     return errors.some( el => el.message.toLowerCase().includes(inputName)) ? 'error' : ''
+  }
+
+  saveUser = createdUser => {
+    return this.state.usersRef.child(createdUser.user.uid).set({
+      name: createdUser.user.displayName,
+      // password: createdUser.user.phoneNumber,
+      avatar: createdUser.user.photoURL,
+    })
   }
 
   render() {
