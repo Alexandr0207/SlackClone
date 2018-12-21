@@ -6,6 +6,7 @@ import {setUser} from '../redux/actions/setUserAction';
 import firebase from '../firebase';
 import Login from '../Auth/Login';
 import Registration from '../Auth/Registration';
+import Spiner from '../redux/Spiner/Spiner';
 
 class Root extends Component {
   componentDidMount(){
@@ -18,23 +19,22 @@ class Root extends Component {
     })
   }
   render() {
-    return (
-      <div>
+    return this.props.isLoading ? <Spiner/> : (
       <Switch>
         <Route exact path="/" component={App}/>
         <Route path="/login" component={Login}/>
         <Route path="/registration" component={Registration}/>
       </Switch>
-      </div>
     );
   }
 }
 
-// function mapStateToProps(state) {
-//   return{
-//     isLoading: state.user.isLoading,
-//   }
-// }
+
+function mapStateToProps(state) {
+  return{
+    isLoading: state.isLoading,
+  }
+}
 
 function mapDispatchToProps (dispatch) {
   return {
@@ -44,4 +44,4 @@ function mapDispatchToProps (dispatch) {
   }
 }
 
-export default withRouter(connect (null,mapDispatchToProps)(Root));
+export default withRouter(connect (mapStateToProps,mapDispatchToProps)(Root));

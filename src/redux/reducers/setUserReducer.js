@@ -1,16 +1,16 @@
 import * as actionTypes from '../actions/type';
 
-const initialUserState = {
+const startState = {
   currentUser: null,
-  isLoading: true
+  isLoading: true,
 }
 
 
 
-const user = (state = initialUserState, action) => {
+const user = (state = startState, action) => {
   switch (action.type) {
     case actionTypes.SET_USER:
-    return{
+    return {
       currentUser: action.data.currentUser,
       isLoading: false
     }
