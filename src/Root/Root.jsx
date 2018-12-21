@@ -6,6 +6,7 @@ import {setUser} from '../redux/actions/setUserAction';
 import firebase from '../firebase';
 import Login from '../Auth/Login';
 import Registration from '../Auth/Registration';
+import {clearUser} from '../redux/actions/ClearUser.js';
 import Spiner from '../redux/Spiner/Spiner';
 
 class Root extends Component {
@@ -15,6 +16,9 @@ class Root extends Component {
         console.log(user);
         this.props.setUser(user);
         this.props.history.push('/');
+      } else {
+        this.props.history.push('/login');
+        this.props.clearUser();
       }
     })
   }
@@ -40,6 +44,9 @@ function mapDispatchToProps (dispatch) {
   return {
     setUser: function(user){
       dispatch (setUser(user))
+    },
+    clearUser: function(user){
+      dispatch (clearUser(user))
     }
   }
 }

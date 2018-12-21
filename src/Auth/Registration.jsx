@@ -67,7 +67,7 @@ class Registration extends Component {
       console.log(createdUser);
       createdUser.user.updateProfile({
         displayName: this.state.username,
-        // phoneNumber: this.state.password,
+        // password: this.state.password,
         photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
       })
       .then(() => {
@@ -91,7 +91,7 @@ class Registration extends Component {
   saveUser = createdUser => {
     return this.state.usersRef.child(createdUser.user.uid).set({
       name: createdUser.user.displayName,
-      // password: createdUser.user.phoneNumber,
+      // password: createdUser.user.passsword,
       avatar: createdUser.user.photoURL,
     })
   }
