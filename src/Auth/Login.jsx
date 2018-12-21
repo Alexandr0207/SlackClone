@@ -76,8 +76,8 @@ class Login extends Component {
           </Header>
           <Form onSubmit={this.handlerSubmit} size='large'>
            <Segment stacked>
-           <Form.Input fluid name='email' icon='mail' iconPosition='left' placeholder='Email' onChange={this.handlerChange} type='email'/>
-           <Form.Input fluid name='password' icon='lock' iconPosition='left' onChange={this.handlerChange} placeholder='Password' type='password'/>
+           <Form.Input fluid name='email' icon='mail' iconPosition='left' className={this.handlerInput(errors, 'email')} placeholder='Email' onChange={this.handlerChange} type='email'/>
+           <Form.Input fluid name='password' icon='lock' iconPosition='left' className={this.handlerInput(errors, 'password')} onChange={this.handlerChange} placeholder='Password' type='password'/>
            <Button color='purple' fluid size='large'>Submit</Button>
            </Segment>
           </Form>
