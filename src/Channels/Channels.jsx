@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Menu, Icon, Modal, Form, Button } from 'semantic-ui-react';
 import firebase from '../firebase.js';
 import {connect} from 'react-redux';
+import {setCurrentChannel} from '../redux/actions/channels.js'
 
 class Channels extends Component {
 
@@ -10,7 +11,9 @@ class Channels extends Component {
     title: '',
     description: '',
     modal: false,
-    channelsRef: firebase.database().ref('channels')
+    channelsRef: firebase.database().ref('channels'),
+    firstLoad: true,
+    activeChannel: false,
   }
 
   componentDidMount(){
@@ -24,7 +27,17 @@ class Channels extends Component {
       console.log(loadedChannels);
       this.setState({
         channels: loadedChannels
-      })
+      }, () => {this.loadFirstChannel()})
+    })
+  }
+
+  loadFirstChannel = () => {
+    if(this.state.firstLoad && this.state.channels.length>0){
+      this.props.setCurrentChannel(this.state.channels[0]);
+      // this.showActiveChannel(this.state.channels[0])
+    }
+    this.setState({
+      firstLoad: false
     })
   }
 
@@ -64,6 +77,12 @@ class Channels extends Component {
       modal: false,
     })
   }
+  
+  showActiveChannel = (channel) => {
+    this.setState({
+      activeChannel: channel.id,
+    })
+  }
 
   handleSubmit = e => {
     e.preventDefault();
@@ -91,7 +110,8 @@ class Channels extends Component {
           </span> ({channels.length}) <Icon name='add' onClick={this.openModal}/>
         </Menu.Item>
         {channels.length > 0 && channels.map(channel => (
-          <Menu.Item key={channel.id} name={channel.name} style={{opacity: 0.7}}>
+          <Menu.Item onClick={(() => {this.props.setCurrentChannel(channel)
+          this.showActiveChannel(channel)})} active={channel.id === this.state.activeChannel} key={channel.id} name={channel.name} style={{opacity: 0.7}}>
           # {channel.name}
           </Menu.Item>
         ))}
@@ -117,8 +137,16 @@ class Channels extends Component {
 }
 function mapStateToProps(state){
   return {
-    user: state.currentUser
+    user: state.user.currentUser
   }
 }
 
-export default connect(mapStateToProps,null)(Channels);
+function mapDispatchToProps(dispatch) {
+  return {
+    setCurrentChannel: function (params) {
+          dispatch(setCurrentChannel(params));
+        }
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Channels);

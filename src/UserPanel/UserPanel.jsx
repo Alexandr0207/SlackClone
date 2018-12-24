@@ -41,7 +41,7 @@ class UserPanel extends Component {
           </Grid.Row>
           <Header style={{padding: '0.25rem'}} as='h4' inverted>
           <Dropdown trigger={
-          <span style={{marginLeft: '1rem'}}><Image src={this.props.URL} spaced='right' avatar/>{this.props.name}</span>
+          <span style={{marginLeft: '1rem'}}><Image src={this.props.currentUser && this.props.currentUser.photoURL} spaced='right' avatar/>{this.props.currentUser && this.props.currentUser.displayName}</span>
           } options={this.dropdownOptions()}/>
           </Header>
         </Grid.Column>
@@ -52,9 +52,8 @@ class UserPanel extends Component {
 
 function mapStateToProps(state) {
   return{
-  URL: state.currentUser.photoURL,
-  name: state.currentUser.displayName
+  currentUser: state.user.currentUser
   }
 }
 
-export default connect(mapStateToProps, null)(UserPanel);
+export default connect(mapStateToProps)(UserPanel);
