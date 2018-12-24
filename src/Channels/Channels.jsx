@@ -20,6 +20,10 @@ class Channels extends Component {
     this.addListeners();
   }
 
+  componentWillUnmount(){
+    this.state.channelsRef.off();
+  }
+
   addListeners = () =>{
     let loadedChannels = [];
     this.state.channelsRef.on('child_added', snap =>{
