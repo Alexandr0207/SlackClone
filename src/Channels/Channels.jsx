@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Menu, Icon, Modal, Form, Button } from 'semantic-ui-react';
+import firebase from '../firebase.js';
+import {connect} from 'react-redux';
 
 class Channels extends Component {
 
@@ -8,6 +10,7 @@ class Channels extends Component {
     title: '',
     description: '',
     modal: false,
+    channelsRef: firebase.database().ref('channels')
   }
 
   openModal = () =>{
@@ -16,11 +19,45 @@ class Channels extends Component {
     })
   }
 
+  addChannel = () => {
+    const {channelsRef, title, description} = this.state;
+    const key = channelsRef.push().key;
+    const newChannel = {
+      id: key, 
+      name: title,
+      details: description,
+      createdBy: {
+        name: this.props.user.displayName,
+        avatar: this.props.user.photoURL
+      }
+    }
+    channelsRef
+    .child(key)
+    .update(newChannel)
+    .then(() => {
+      this.setState({
+        title: '', description: ''
+      })
+      this.closeModal();
+      console.log('channel added');
+    })
+    .catch( err => console.log(err))
+  }
+
   closeModal = () => {
     this.setState({
       modal: false,
     })
   }
+
+  handleSubmit = e => {
+    e.preventDefault();
+    if(!this.state.title == '' && !this.state.description == ''){ 
+      this.addChannel();
+    }
+  }
+
+  // isFormValid = ({title, description}) => title && description;
 
   handlerChange = (e) =>{
     this.setState({
@@ -44,19 +81,24 @@ class Channels extends Component {
         Add a Channel   
        </Modal.Header>
        <Modal.Content>
-         <Form>
+         <Form onSubmit={this.handleSubmit}>
           <Form.Input fluid label="Name:" name='title' onChange={this.handlerChange} placeholder="Name of channel" type="text"/>
           <Form.Input fluid label="Description:" name='description' onChange={this.handlerChange} placeholder="Description of channel" type="text"/>
           </Form>
        </Modal.Content>
        <Modal.Actions>
           <Button size="large" onClick={this.closeModal} color='red'>Cancel</Button>
-          <Button size="large" color='green'><Icon name='checkmark'/>Add Channel</Button>
+          <Button size="large" onClick={this.handleSubmit} color='green'><Icon name='checkmark'/>Add Channel</Button>
        </Modal.Actions>
       </Modal>
       </React.Fragment>
     );
   }
 }
+function mapStateToProps(state){
+  return {
+    user: state.currentUser
+  }
+}
 
-export default Channels;
+export default connect(mapStateToProps,null)(Channels);
