@@ -5,6 +5,7 @@ import MessageForm from './MessageForm'
 import firebase from '../firebase'
 import {connect} from 'react-redux';
 import SingleMessage from '../SingleMessage/SingleMessage';
+import FileModal from '../FileModal/FileModal';
 
 class Messages extends Component {
 
@@ -12,6 +13,7 @@ class Messages extends Component {
     messagesRef: firebase.database().ref('messages'),
     messages: [],
     loading: true,
+    modal: false,
   }
   
   componentDidMount () {
@@ -39,7 +41,7 @@ class Messages extends Component {
   }
   
   render() {
-    const {messagesRef, messages} = this.state;
+    const {messagesRef, messages, modal} = this.state;
     return (
       <React.Fragment>
         <MessageHeader/>
@@ -48,7 +50,7 @@ class Messages extends Component {
             {messages.length > 0 && messages.map (message => <SingleMessage key={message.time} message={message} user={message.user}/>)}
           </Comment.Group>
         </Segment>
-        <MessageForm messagesRef={messagesRef}/>      
+        <MessageForm messagesRef={messagesRef}/>
       </React.Fragment>
     );
   }
