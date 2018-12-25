@@ -15,6 +15,8 @@ class Messages extends Component {
     loading: true,
     modal: false,
     currentUser: '',
+    searchTerm: '',
+    searchMessages: [],
   }
   
   componentDidMount () {
@@ -29,6 +31,26 @@ class Messages extends Component {
   // componentDidUpdate (prevProps) {
 
   // }
+
+  handlerChange = async (e) =>{
+    await this.setState({
+    searchTerm: e.target.value,
+    })
+    this.onSearch()
+  }
+
+  onSearch = () => {
+    const searchResult = this.state.messages.filter(el => {
+      if(el && el.content){
+       return el.content.includes(this.state.searchTerm)
+      }
+    })
+    this.setState({
+      searchMessages: searchResult,
+    })
+  }
+
+
 
   addListeners = channelId =>{
     let loadedMessages = [];
@@ -56,13 +78,16 @@ class Messages extends Component {
   }
   
   render() {
-    const {messagesRef, messages, countUser} = this.state;
+    const {messagesRef, messages, countUser, searchMessages} = this.state;
     return (
       <React.Fragment>
-        <MessageHeader countUser={countUser}/>
+        <MessageHeader countUser={countUser} handlerChange={this.handlerChange}/>
         <Segment>
           <Comment.Group className='messages'>
-            {messages.length > 0 && messages.map (message => <SingleMessage key={message.time} message={message} user={message.user}/>)}
+          {searchMessages.length > 0 
+          ? searchMessages.map(message => <SingleMessage key={message.time} message={message} user={message.user}/>)
+                   
+            : messages.length > 0 && messages.map (message => <SingleMessage key={message.time} message={message} user={message.user}/>)}
           </Comment.Group>
         </Segment>
         <MessageForm messagesRef={messagesRef}/>

@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 
 class MessageHeader extends Component {
   render() {
-    const {countUser} = this.props;
+    const {countUser, handlerChange} = this.props;
     return (
       <Segment clearing>
         <Header fluid='true' as='h2' floated='left' style={{marginBottom: 0}}>
@@ -14,7 +14,7 @@ class MessageHeader extends Component {
           </Header.Subheader>
         </Header>
         <Header floated='right'>
-          <Input size='mini' icon='search' name='searchTerm' placeholder='Search'/>
+          <Input size='mini' icon='search' onChange={handlerChange} name='searchTerm' placeholder='Search'/>
         </Header>
       </Segment>
     );
