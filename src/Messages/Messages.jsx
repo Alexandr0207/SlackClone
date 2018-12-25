@@ -5,7 +5,7 @@ import MessageForm from './MessageForm'
 import firebase from '../firebase'
 import {connect} from 'react-redux';
 import SingleMessage from '../SingleMessage/SingleMessage';
-import FileModal from '../FileModal/FileModal';
+// import FileModal from '../FileModal/FileModal';
 
 class Messages extends Component {
 
@@ -14,6 +14,7 @@ class Messages extends Component {
     messages: [],
     loading: true,
     modal: false,
+    currentUser: '',
   }
   
   componentDidMount () {
@@ -37,14 +38,28 @@ class Messages extends Component {
         messages: loadedMessages,
         loading: false
       })
+      this.countUnicUsers(loadedMessages)
+    })
+  }
+
+  countUnicUsers = messages => {
+    const iniqueUsers = messages.reduce ((acc, el) => {
+      if(!acc.includes(el.user.name)){
+        acc.push(el.user.name)
+      }
+      return acc
+    }, [])
+
+    this.setState({
+      countUser: `${iniqueUsers.length} users`
     })
   }
   
   render() {
-    const {messagesRef, messages, modal} = this.state;
+    const {messagesRef, messages, countUser} = this.state;
     return (
       <React.Fragment>
-        <MessageHeader/>
+        <MessageHeader countUser={countUser}/>
         <Segment>
           <Comment.Group className='messages'>
             {messages.length > 0 && messages.map (message => <SingleMessage key={message.time} message={message} user={message.user}/>)}
