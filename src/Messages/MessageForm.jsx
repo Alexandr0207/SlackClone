@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Segment, Input, Button } from 'semantic-ui-react';
-import firebase from '../firebase.js';
 import {connect} from 'react-redux';
+import uuidv4 from 'uuid/v4';
+import firebase from '../firebase.js';
 import FileModal from '../FileModal/FileModal.jsx';
 
 class MessageForm extends Component {
@@ -11,8 +12,45 @@ class MessageForm extends Component {
     loading: false,
     errors: [],
     modal: false,
+    uploadTask: null,
+    storageRef: firebase.storage().ref(),
     // messagesRef: firebase.database().ref('messages')
   }
+
+  uploadFile = (file,metadata) => {
+    const pathToUpload = this.props.currentChannel.id;
+    const ref = this.props.messagesRef;
+    const filePath = `chat/public/image${uuidv4()}.jpg`;
+    this.setState({
+      uploadTask: this.state.storageRef.child(filePath).put(file, metadata)
+    },
+    () => {
+      this.state.uploadTask.on(
+      "state_changed",
+      () => {
+        this.state.uploadTask.snapshot.ref
+          .getDownloadURL()
+          .then(downloadUrl => {
+            this.sendFileMessage(downloadUrl, ref, pathToUpload);
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      }
+    )
+  })
+}
+
+  sendFileMessage= (url,ref,path) => {
+    ref.child(path)
+    .push()
+    .set(this.createMessage(url))
+    .catch(err => {
+      console.log(err);
+    })
+  }
+
+
 
   handleChange = e =>{
     this.setState({
@@ -32,15 +70,20 @@ class MessageForm extends Component {
   }
 
 
-  createMessage = () => {
+  createMessage = (url = null) => {
     const message = {
-      content: this.state.message, 
+      // content: this.state.message, 
       time: firebase.database.ServerValue.TIMESTAMP,
       user: {
         id: this.props.currentUser.uid,
         name: this.props.currentUser.displayName,
         avatar: this.props.currentUser.photoURL,
       }
+    }
+    if(url !== null) {
+      message['image'] = url
+    } else{
+      message['content'] = this.state.message;
     }
     return message
   }
@@ -55,7 +98,7 @@ class MessageForm extends Component {
     messagesRef
     .child(currentChannel.id)
     .push()
-    .set(this.createMessage())
+    .set(this.createMessage())                                                                                                       
     .then(()=>{
       this.setState({loading: false,message: ''})
     })
@@ -77,7 +120,7 @@ class MessageForm extends Component {
         <Button.Group icon widths='2'>
           <Button color='orange' onClick={this.sendMessage} content='Add Reply' labelPosition='left' icon='edit'/>
           <Button color='teal' content='Upload media' labelPosition='right' onClick={this.open} icon='cloud upload'/>
-        <FileModal modal={modal} closeModal={this.close}/>
+        <FileModal modal={modal} closeModal={this.close} uploadFile={this.uploadFile}/>
         </Button.Group>
       </Segment>
     );

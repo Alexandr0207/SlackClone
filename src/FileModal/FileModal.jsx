@@ -22,7 +22,7 @@ class FileModal extends Component {
         const metadata = {
           contentType: mime.lookup(this.state.file.name)
         }
-        this.uploadFile(this.state.file,metadata);
+        this.props.uploadFile(this.state.file, metadata)
         this.props.closeModal();
         this.setState({
           file: null,
@@ -30,10 +30,6 @@ class FileModal extends Component {
       }
     }
   }
-
-  uploadFile = (file,metadata) => {
-    console.log(file,metadata)
-  } 
 
   isFileTypeCorect = fileName => this.state.correctType.includes(mime.lookup(fileName))
 

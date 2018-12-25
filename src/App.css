@@ -9,3 +9,7 @@ html, body, .app {
   overflow-y: scroll;
   min-width: 100%;
 }
+
+.message__image{
+  padding: 1rem;
+}
