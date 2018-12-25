@@ -23,7 +23,7 @@ class Messages extends Component {
     setTimeout(()=>{
       const {currentChannel, currentUser} = this.props;
     if(currentChannel && currentUser) {
-      console.log('hello');
+      // console.log('hello');
       this.addListeners(currentChannel.id)
     }
   },3000)
