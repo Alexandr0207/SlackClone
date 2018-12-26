@@ -1,6 +1,7 @@
 import React from 'react';
 import { Comment, Image } from 'semantic-ui-react';
-import moment from 'moment'
+import moment from 'moment';
+import {connect} from 'react-redux'
 
 const isOwnMessage = (message, user) => message.user.id === user.id ? 'message__self' : '';
 
@@ -27,5 +28,9 @@ const SingleMessage = ({message, user}) => {
     </Comment>
   );
 };
+
+const mapStateToProps = state => ({
+  imagge: state.user.currentUser, 
+})
 
 export default SingleMessage;

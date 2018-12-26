@@ -112,11 +112,11 @@ displayUserColor = colors =>
         <Modal.Content>
           <Segment>
             <Label content="Primary Color"/>
-            <SketchPicker onChange={this.handleChangePrimaryColor} color={primary}/>  
+            <SketchPicker fluid onChange={this.handleChangePrimaryColor} color={primary}/>  
           </Segment>
           <Segment>
             <Label content="Secondary Color"/>
-            <SketchPicker onChange={this.handleChangeSecondaryColor} color={secondary}/>  
+            <SketchPicker fluid onChange={this.handleChangeSecondaryColor} color={secondary}/>  
           </Segment>
         </Modal.Content>
         <Modal.Actions>

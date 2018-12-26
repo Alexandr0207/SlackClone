@@ -17,6 +17,7 @@ class Messages extends Component {
     currentUser: '',
     searchTerm: '',
     searchMessages: [],
+    
   }
   
   componentDidMount () {
