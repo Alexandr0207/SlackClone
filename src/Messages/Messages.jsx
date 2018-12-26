@@ -28,9 +28,14 @@ class Messages extends Component {
     }
   },3000)
   }
-  // componentDidUpdate (prevProps) {
+  componentDidUpdate (prevProps) {
+    if(prevProps.currentChannel && this.props.currentChannel) {
+      if(prevProps.currentChannel.name !== this.props.currentChannel.name){
+        this.addListeners(this.props.currentChannel.id);
+      }
+    }
 
-  // }
+  }
 
   handlerChange = async (e) =>{
     await this.setState({
@@ -54,13 +59,21 @@ class Messages extends Component {
 
   addListeners = channelId =>{
     let loadedMessages = [];
-    this.state.messagesRef.child(channelId).on('child_added', snap =>{
-      loadedMessages.push(snap.val())
-      this.setState({
-        messages: loadedMessages,
-        loading: false
-      })
-      this.countUnicUsers(loadedMessages)
+    this.state.messagesRef.child(channelId).on('value', snap =>{
+      if(snap.exists()) {
+        this.state.messagesRef.child(channelId).on('child_added', snap =>{
+          loadedMessages.push(snap.val())
+          this.setState({
+            messages:loadedMessages,
+            loading: false,
+          }, () => this.countUnicUsers(this.state.messages))
+        })
+      }else {
+        this.setState({
+          messages: [],
+          loading: false,
+        }, () => this.countUnicUsers(this.state.messages))
+      }
     })
   }
 
